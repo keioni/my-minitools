@@ -3,7 +3,7 @@
 # 84600 = 1 day * 7 = 1 week
 BACKUP_PERIOD=604800
 HOST_NAME=$(hostname -s)
-DEST_PATH=$HOME/workspace/var/share/shell_histories
+DEST_PATH=$HOME/workspace/var/shell_histories
 INDICATOR_FILE=$DEST_PATH/_${HOST_NAME}_latest_backup_timestamp
 
 backup_history_file() {
@@ -14,7 +14,7 @@ backup_history_file() {
     backup_file_name=${HOST_NAME}_$(date +'%Y%m%d')
 
     cp -n $HOME/.zsh_history $DEST_PATH/$backup_file_name
-    echo "\033[36mBackued up history file.\e[m"
+    echo "** Backued up history file. **"
     echo $"$(date +'%s') $(date +'%y-%m-%d %H:%M:%S')" > $INDICATOR_FILE
 }
 
