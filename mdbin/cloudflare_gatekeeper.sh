@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export ADDR_LIST_FILE="cloudflare_ipv4_addrs.txt"
+export ADDR_LIST_FILE="cloudflare_ipaddr_ranges.txt"
 
 # operation
 if [ "$1" = "open" ]; then
@@ -17,16 +17,15 @@ if [ "$2" = "--dry" ]; then
 fi
 
 # first, use current directory. second, use script directory.
-if [ -f "./cloudflare_ipv4.txt" ]; then
-    ADDR_LIST_PATH="./cloudflare_ipv4.txt"
-elif [ -f "$(dirname "$0")/cloudflare_ipv4.txt" ]; then
-    ADDR_LIST_PATH="$(dirname "$0")/cloudflare_ipv4.txt"
+if [ -f "./$ADDR_LIST_FILE" ]; then
+    ADDR_LIST_PATH="./$ADDR_LIST_FILE"
+elif [ -f "$(dirname "$0")/$ADDR_LIST_FILE" ]; then
+    ADDR_LIST_PATH="$(dirname "$0")/$ADDR_LIST_FILE"
 else
     echo "Cloudflare IPv4 list not found. "
     echo "Download from: https://www.cloudflare.com/ips-v4/"
     exit 1
 fi
-
 
 for network in $(cat $ADDR_LIST_PATH); do
 
