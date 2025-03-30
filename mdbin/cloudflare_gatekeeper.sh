@@ -50,6 +50,17 @@ for network in $(cat $ADDR_LIST_PATH); do
     fi
 done
 
+# add "deny"
+if [ "$command" = "allow delete" ]; then
+    echo "> closing port 443 for all other networks ..."
+    if [ "$flag" = "--dry" ]; then
+        echo "ufw deny proto tcp from any to any port 443"
+    else
+        ufw deny proto tcp from any to any port 443
+    fi
+fi
+
+echo "==== status ===="
 ufw status verbose | grep "443" | grep "ALLOW" | grep -v "any" | sort -u
 echo "Done."
 echo ""
