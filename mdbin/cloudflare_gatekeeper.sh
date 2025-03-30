@@ -56,4 +56,7 @@ ufw status verbose | grep "443" | grep "ALLOW" | grep -v "any" | sort -u
 echo "Done."
 echo ""
 
+echo "ufw reloading..."
+ufw reload
+
 systemctl status ufw
