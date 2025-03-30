@@ -28,29 +28,30 @@ else
 fi
 
 for network in $(cat $ADDR_LIST_PATH); do
-
     # Skip empty lines and comments
     if [ ! -n "$network" ]; then
         continue
     fi
-
     # Skip comments    
     if [ "${network:0:1}" = "#" ]; then
         continue
     fi
-
     # open or close port 443 for the cloudflare network
     if [ "$command" = "allow" ]; then
         echo "> opening port 443 for $network ..."
     else
         echo "> closing port 443 for $network ..."
     fi
-
     # dry run?
     if [ "$flag" = "--dry" ]; then
         echo "ufw $command proto tcp from $network to any port 443"
     else
         ufw $command proto tcp from "$network" to any port 443
     fi
-
 done
+
+ufw status verbose | grep "443" | grep "ALLOW" | grep -v "any" | sort -u
+echo "Done."
+echo ""
+
+systemctl status ufw
