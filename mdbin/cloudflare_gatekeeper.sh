@@ -3,9 +3,9 @@
 export ADDR_LIST_FILE="cloudflare_ipv4.txt"
 
 # operation
-if [ "$1" eq "open" ]; then
+if [ "$1" -eq "open" ]; then
     command="allow"
-elif [ "$1" eq "close" ]; then
+elif [ "$1" -eq "close" ]; then
     command="delete allow"
 else
     echo "Usage: $0 open|close"
@@ -36,19 +36,19 @@ for network in $(cat $ADDR_LIST_PATH); do
     fi
 
     # Skip comments    
-    if [ "${network:0:1}" eq "#" ]; then
+    if [ "${network:0:1}" -eq "#" ]; then
         continue
     fi
 
     # open or close port 443 for the cloudflare network
-    if [ "$command" eq "allow" ]; then
+    if [ "$command" -eq "allow" ]; then
         echo "> opening port 443 for $network ..."
     else
         echo "> closing port 443 for $network ..."
     fi
 
     # dry run?
-    if [ "$flag" eq "--dry" ]; then
+    if [ "$flag" -eq "--dry" ]; then
         echo "ufw $command proto tcp from $network to any port 443"
     else
         ufw $command proto tcp from "$network" to any port 443
