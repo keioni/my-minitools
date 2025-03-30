@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export ADDR_LIST_FILE="cloudflare_ipv4.txt"
+export ADDR_LIST_FILE="cloudflare_ipv4_addrs.txt"
 
 # operation
 if [ "$1" = "open" ]; then
