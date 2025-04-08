@@ -8,14 +8,17 @@ INDICATOR_FILE=$DEST_PATH/_${HOST_NAME}_latest_backup_timestamp
 
 backup_history_file() {
     if [ ! -d $DEST_PATH ]; then
-        echo "[FAILED] Backup path had some problems."
-        exit 1
+        echo "[FAILED] Backup path had some problems." && exit 1
     fi
     backup_file_name=${HOST_NAME}_$(date +'%Y%m%d')
 
     cp -n $HOME/.zsh_history $DEST_PATH/$backup_file_name
-    echo "** Backued up history file. **"
-    echo $"$(date +'%s') $(date +'%y-%m-%d %H:%M:%S')" > $INDICATOR_FILE
+    gzip -f $DEST_PATH/$backup_file_name
+    if [ $? -ne 0 ]; then
+        echo "[FAILED] Backup history file failed." && exit 1
+    fi
+    echo "** Backed up history file. **"
+    echo "$(date +'%s') $(date +'%y-%m-%d %H:%M:%S')" > $INDICATOR_FILE
 }
 
 if [ -f $INDICATOR_FILE ]; then
