@@ -28,7 +28,7 @@ backup_history_file() {
         exit 1
     fi
     ok "[✔] History file backup completed."
-    echo "$(date +'%s') $(date +'%y-%m-%d %H:%M:%S')" > $INDICATOR_FILE
+    echo "$(date +'%s') $(LC_ALL=C date +'%y-%m-%d(%a) %H:%M:%S')" > $INDICATOR_FILE
 }
 
 if [ -f $INDICATOR_FILE ]; then
@@ -41,4 +41,3 @@ if [ -f $INDICATOR_FILE ]; then
 else
     backup_history_file
 fi
-
