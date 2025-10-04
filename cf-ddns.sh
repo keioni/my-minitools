@@ -2,7 +2,7 @@
 
 # Dynamic DNS update script for use with Cloudflare's API
 # Requires: curl, jq
-# Usage: ./ddns.sh FQDN [-4|-6]
+# Usage: ./cf-ddns.sh FQDN [-4|-6]
 
 # Set API_TOKEN before running.
 # FQDN is the full domain name to update, e.g. home.example.com
