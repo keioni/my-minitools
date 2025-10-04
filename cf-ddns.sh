@@ -16,7 +16,7 @@ if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
     echo "Usage: $0 FQDN [-4|-6]"
     exit 1
 fi
-    
+
 FQDN="$1"
 
 # I love IPv6
