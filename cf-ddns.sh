@@ -31,6 +31,7 @@ else
     ip_address=$(curl -s -6 https://ip.me)
     record_type="AAAA"
 fi
+echo "new address: $ip_address"
 
 
 # get Account ID from API token to check API token validity
@@ -53,10 +54,29 @@ if [ "$zone_id" = "null" ]; then
     exit 1
 fi
 
-# get DNS record ID from record name and type
-record_id=$(curl -s "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records?name=$FQDN" \
-    -H "Authorization: Bearer $API_TOKEN" \
-    | jq -r '.result[] | select(.type == "'"$record_type"'") | .id')
+# create a temp file to store JSON responses
+tmp_json=$(mktemp)
+trap 'rm -f "$tmp_json"' EXIT
+
+# get current DNS records for the FQDN
+# store output in a temp file to avoid multiple API calls
+curl -s "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records?name=$FQDN" \
+    -H "Authorization: Bearer $API_TOKEN" > $tmp_json
+if [ "$(jq -r '.success' $tmp_json)" != "true" ]; then
+    echo "Error fetching DNS records for $FQDN"
+    jq .errors $tmp_json
+    exit 1
+fi
+
+# check if the IP address is already up to date
+current_ip_address=$(jq -r '.result[] | select(.type == "'"$record_type"'") | .content' $tmp_json)
+echo "current address: $current_ip_address"
+if [ "$current_ip_address" = "$ip_address" ]; then
+    echo "No update needed for $FQDN ( $current_ip_address )"
+    exit 0
+fi
+
+record_id=$(jq -r '.result[] | select(.type == "'"$record_type"'") | .id' $tmp_json)
 if [ "$record_id" = "null" ]; then
     echo "DNS $record_type record not found for $FQDN"
     exit 1
@@ -72,4 +92,16 @@ curl -s "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record
         "content": "'"$ip_address"'",
         "ttl": 3600,
         "proxied": false
-    }' | jq
+    }' > $tmp_json
+if [ "$(jq -r '.result.content' $tmp_json)" != "$ip_address" ]; then
+    echo "Failed to update DNS record for $FQDN ( $current_ip_address -> $ip_address )"
+    exit 1
+fi
+
+if [ "$(jq -r '.success' $tmp_json)" != "true" ]; then
+    echo "Error updating DNS record for $FQDN ( $current_ip_address -> $ip_address )"
+    jq .errors $tmp_json
+    exit 1
+fi
+echo "Updated $FQDN ( $current_ip_address -> $ip_address)"
+exit 0
