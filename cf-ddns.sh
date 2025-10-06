@@ -54,12 +54,10 @@ if [ "$zone_id" = "null" ]; then
     exit 1
 fi
 
-# create a temp file to store JSON responses
-tmp_json=$(mktemp)
-trap 'rm -f "$tmp_json"' EXIT
-
 # get current DNS records for the FQDN
 # store output in a temp file to avoid multiple API calls
+tmp_json=$(mktemp)
+trap 'rm -f "$tmp_json"' EXIT
 curl -s "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records?name=$FQDN" \
     -H "Authorization: Bearer $API_TOKEN" > $tmp_json
 if [ "$(jq -r '.success' $tmp_json)" != "true" ]; then
