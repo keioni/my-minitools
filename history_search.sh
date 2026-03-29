@@ -1,10 +1,11 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
-search_path="~/workspace/var/command-history/* ~/.zsh_history"
+search_path=
 
 ic=""
-if [ $(basename $0) = "hhi" ]; then
+script_name=${0##*/}
+if [ "$script_name" = "hhi" ]; then
     ic="--ignore-case"
 fi
 
-sort -u $ic $search_path | grep --color -E $ic $1
+sort -u $ic ~/workspace/var/command-history/* ~/.zsh_history | grep --color -E $ic $1
